@@ -307,6 +307,7 @@ export class Game {
     this.applyCarryPowerup();
     this.state = "playing";
     this.ui.hideAll();
+    this.ui.showHud();
   }
 
   reset() {
@@ -366,6 +367,7 @@ export class Game {
       GUIDE: this.guideStacks
     };
     this.carryPowerupKey = null;
+    this.ui.hideHud();
     this.ui.showGameOver(this.score, this.elapsed, this.level);
   }
 

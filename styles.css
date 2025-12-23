@@ -134,6 +134,10 @@ button:hover {
   font-size: 0.95rem;
 }
 
+#hud.hidden {
+  display: none;
+}
+
 .hud-left, .hud-right {
   display: grid;
   gap: 6px;

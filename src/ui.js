@@ -18,6 +18,7 @@
     this.hudWeapon = document.getElementById("hud-weapon");
     this.hudFps = document.getElementById("hud-fps");
     this.hudHealth = document.getElementById("hud-health");
+    this.hud = document.getElementById("hud");
     this.bossBar = document.getElementById("boss-bar");
     this.bossHealth = document.getElementById("boss-health");
 
@@ -38,11 +39,13 @@
 
   showLoading() {
     this.hideAll();
+    this.hideHud();
     this.loading.classList.add("visible");
   }
 
   showMenu() {
     this.hideAll();
+    this.hideHud();
     this.menu.classList.add("visible");
   }
 
@@ -56,6 +59,7 @@
 
   showGameOver(score, time, level) {
     this.hideAll();
+    this.hideHud();
     this.gameOver.classList.add("visible");
     this.finalScore.textContent = `Score: ${score}`;
     this.finalTime.textContent = `Time: ${time.toFixed(1)}s`;
@@ -74,6 +78,15 @@
     }, 1600);
   }
 
+  showHud() {
+    if (!this.hud) return;
+    this.hud.classList.remove("hidden");
+  }
+
+  hideHud() {
+    if (!this.hud) return;
+    this.hud.classList.add("hidden");
+  }
 
   updateHud(score, time, level, health, maxHealth, showFps, fps, boss, weaponDamage) {
     this.hudScore.textContent = score;
