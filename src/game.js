@@ -1172,52 +1172,54 @@ export class Game {
   }
 
   drawPowerupGlow(ctx, width, height, camX, camY) {
-    const target = this.nearestPowerUp;
-    if (!target) return;
-    const dx = target.x - this.hero.x;
-    const dy = target.y - this.hero.y;
-    const screenX = target.x - camX;
-    const screenY = target.y - camY;
-    const range = target.hueMax - target.hueMin;
-    const hue = target.hueMin + ((target.time * target.cycleSpeed) % range);
-    const baseAlpha = 0.22;
-    const color = `hsla(${hue}, 80%, 60%, ${baseAlpha})`;
+    if (this.powerUps.length === 0) return;
     const fade = "rgba(0,0,0,0)";
-    const angle = Math.atan2(dy, dx);
     const radius = Math.max(width, height) * 0.3;
-    const dist = Math.hypot(dx, dy);
+    const maxDist = Math.hypot(width, height) * 1.2;
 
-    ctx.save();
-    const offscreen = screenX < 0 || screenX > width || screenY < 0 || screenY > height;
-    if (offscreen) {
-      const maxDist = Math.hypot(width, height) * 1.2;
-      const push = 0.55 + Math.min(0.2, (dist / maxDist) * 0.2);
-      const cx = width / 2 + Math.cos(angle) * (width * push);
-      const cy = height / 2 + Math.sin(angle) * (height * push);
-      ctx.translate(cx, cy);
-      const grad = ctx.createRadialGradient(0, 0, radius * 0.2, 0, 0, radius);
-      grad.addColorStop(0, color);
+    for (const target of this.powerUps) {
+      const dx = target.x - this.hero.x;
+      const dy = target.y - this.hero.y;
+      const screenX = target.x - camX;
+      const screenY = target.y - camY;
+      const range = target.hueMax - target.hueMin;
+      const hue = target.hueMin + ((target.time * target.cycleSpeed) % range);
+      const baseAlpha = 0.22;
+      const color = `hsla(${hue}, 80%, 60%, ${baseAlpha})`;
+      const angle = Math.atan2(dy, dx);
+      const dist = Math.hypot(dx, dy);
+
+      ctx.save();
+      const offscreen = screenX < 0 || screenX > width || screenY < 0 || screenY > height;
+      if (offscreen) {
+        const push = 0.55 + Math.min(0.2, (dist / maxDist) * 0.2);
+        const cx = width / 2 + Math.cos(angle) * (width * push);
+        const cy = height / 2 + Math.sin(angle) * (height * push);
+        ctx.translate(cx, cy);
+        const grad = ctx.createRadialGradient(0, 0, radius * 0.2, 0, 0, radius);
+        grad.addColorStop(0, color);
+        grad.addColorStop(1, fade);
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(0, 0, radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+        continue;
+      }
+
+      const minAlpha = 0.06;
+      const glowAlpha = minAlpha + (baseAlpha - minAlpha) * (1 - Math.exp(-dist / 420));
+      const onColor = `hsla(${hue}, 80%, 60%, ${glowAlpha.toFixed(3)})`;
+      ctx.translate(screenX, screenY);
+      const grad = ctx.createRadialGradient(0, 0, radius * 0.15, 0, 0, radius * 0.7);
+      grad.addColorStop(0, onColor);
       grad.addColorStop(1, fade);
       ctx.fillStyle = grad;
       ctx.beginPath();
       ctx.arc(0, 0, radius, 0, Math.PI * 2);
       ctx.fill();
       ctx.restore();
-      return;
     }
-
-    const minAlpha = 0.06;
-    const glowAlpha = minAlpha + (baseAlpha - minAlpha) * (1 - Math.exp(-dist / 420));
-    const onColor = `hsla(${hue}, 80%, 60%, ${glowAlpha.toFixed(3)})`;
-    ctx.translate(screenX, screenY);
-    const grad = ctx.createRadialGradient(0, 0, radius * 0.15, 0, 0, radius * 0.7);
-    grad.addColorStop(0, onColor);
-    grad.addColorStop(1, fade);
-    ctx.fillStyle = grad;
-    ctx.beginPath();
-    ctx.arc(0, 0, radius, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.restore();
   }
 
   drawBossIndicator(ctx, width, height, camX, camY) {
