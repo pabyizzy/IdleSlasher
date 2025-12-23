@@ -138,15 +138,54 @@ button:hover {
   display: none;
 }
 
-.hud-left, .hud-right {
+.hud-panel {
   display: grid;
   gap: 6px;
+  pointer-events: auto;
 }
 
 .hud-center {
   display: grid;
   place-items: start center;
   flex: 1;
+}
+
+.hud-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: rgba(6, 10, 16, 0.65);
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.7rem;
+  color: var(--muted);
+}
+
+.hud-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(12, 16, 24, 0.8);
+  color: var(--text);
+  font-size: 1rem;
+  line-height: 1;
+  pointer-events: auto;
+}
+
+.hud-body.collapsed {
+  display: none;
+}
+
+.hud-panel.collapsed .hud-body {
+  display: none;
 }
 
 .stat {
@@ -275,6 +314,33 @@ button:hover {
 #weapon-toast.visible {
   opacity: 1;
   transform: translate(-50%, -50%) scale(1);
+}
+
+.sprint-button {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 18px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: linear-gradient(140deg, #ffe9a3, #ffb66a);
+  color: #3d1e00;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  pointer-events: auto;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.28);
+}
+
+body.mobile .hud-toggle {
+  display: inline-flex;
+}
+
+body.mobile .sprint-button {
+  display: inline-flex;
 }
 
 

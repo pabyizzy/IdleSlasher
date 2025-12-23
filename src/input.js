@@ -6,6 +6,7 @@
     this.touchActive = false;
     this.touchId = null;
     this.touchStart = { x: 0, y: 0 };
+    this.sprintActive = false;
     this._down = (e) => {
       const key = e.key.toLowerCase();
       if (!this.keys.has(key)) {
@@ -101,5 +102,13 @@
     x = Math.max(-1, Math.min(1, x));
     y = Math.max(-1, Math.min(1, y));
     return { x, y };
+  }
+
+  setSprintActive(active) {
+    this.sprintActive = active;
+  }
+
+  isSprintActive() {
+    return this.sprintActive;
   }
 }

@@ -5,6 +5,7 @@ const canvas = document.getElementById("game-canvas");
 const ui = new UIManager();
 const game = new Game(canvas, ui);
 game.input.attachTouch(canvas);
+ui.bindSprintButton(game.input);
 
 function applySettings() {
   const difficulty = ui.settingDifficulty.value;

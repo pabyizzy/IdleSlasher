@@ -79,12 +79,18 @@
     </section>
 
     <section id="hud" class="hidden">
-      <div class="hud-left">
-        <div class="stat">Score: <span id="hud-score">0</span></div>
-        <div class="stat">Time: <span id="hud-time">0.0</span>s</div>
-        <div class="stat">Level: <span id="hud-level">1</span></div>
-        <div class="stat">Weapon: <span id="hud-weapon">1</span></div>
-        <div class="stat">FPS: <span id="hud-fps">--</span></div>
+      <div class="hud-left hud-panel">
+        <div class="hud-header">
+          <span>Stats</span>
+          <button id="hud-left-toggle" class="hud-toggle" type="button" aria-expanded="true" aria-controls="hud-left-body">☰</button>
+        </div>
+        <div id="hud-left-body" class="hud-body">
+          <div class="stat">Score: <span id="hud-score">0</span></div>
+          <div class="stat">Time: <span id="hud-time">0.0</span>s</div>
+          <div class="stat">Level: <span id="hud-level">1</span></div>
+          <div class="stat">Weapon: <span id="hud-weapon">1</span></div>
+          <div class="stat">FPS: <span id="hud-fps">--</span></div>
+        </div>
       </div>
       <div class="hud-center">
         <div id="boss-bar" class="boss hidden">
@@ -94,23 +100,31 @@
           </div>
         </div>
       </div>
-      <div class="hud-right">
-        <div class="health">
-          <span>HP</span>
-          <div class="health-bar">
-            <div id="hud-health" class="health-fill"></div>
+      <div class="hud-right hud-panel">
+        <div class="hud-header">
+          <span>Info</span>
+          <button id="hud-right-toggle" class="hud-toggle" type="button" aria-expanded="true" aria-controls="hud-right-body">☰</button>
+        </div>
+        <div id="hud-right-body" class="hud-body">
+          <div class="health">
+            <span>HP</span>
+            <div class="health-bar">
+              <div id="hud-health" class="health-fill"></div>
+            </div>
+          </div>
+          <div class="controls">
+            <strong>Controls</strong>
+            <div>Move: WASD / Arrows</div>
+            <div>Boost: Shift</div>
+            <div>Pause: P</div>
+            <div>Fullscreen: F</div>
+            <div>Start: Space</div>
+            <div>Sound: Menu Toggle</div>
           </div>
         </div>
-        <div class="controls">
-          <strong>Controls</strong>
-          <div>Move: WASD / Arrows</div>
-          <div>Boost: Shift</div>
-          <div>Pause: P</div>
-          <div>Fullscreen: F</div>
-          <div>Start: Space</div>
-          <div>Sound: Menu Toggle</div>
-        </div>
       </div>
+
+      <button id="btn-sprint" class="sprint-button" type="button" aria-label="Hold to sprint">Sprint</button>
     </section>
 
     <div id="weapon-toast" aria-live="polite">WEAPON UPGRADE</div>

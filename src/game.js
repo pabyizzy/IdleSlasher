@@ -220,6 +220,7 @@ export class Game {
 
     this.difficulty = "normal";
     this.showFps = false;
+    this.isMobile = false;
 
     this._onResize = () => this.resize();
     window.addEventListener("resize", this._onResize);
@@ -244,6 +245,12 @@ export class Game {
     const dpr = window.devicePixelRatio || 1;
     const isMobile = window.matchMedia("(pointer: coarse)").matches
       || window.innerWidth <= CONFIG.MOBILE_MAX_WIDTH;
+    if (this.isMobile !== isMobile) {
+      this.isMobile = isMobile;
+      if (this.ui?.setMobileMode) {
+        this.ui.setMobileMode(isMobile);
+      }
+    }
     const scale = isMobile ? CONFIG.MOBILE_ZOOM : 1;
     this.canvas.width = Math.floor(window.innerWidth * dpr);
     this.canvas.height = Math.floor(window.innerHeight * dpr);
@@ -591,7 +598,7 @@ export class Game {
     if (this.boostTimer > 0) {
       this.boostTimer -= dt;
       speed *= CONFIG.HERO_BOOST_MULT;
-    } else if (this.input.isDown("shift") && this.boostCooldown <= 0) {
+    } else if ((this.input.isDown("shift") || this.input.isSprintActive()) && this.boostCooldown <= 0) {
       this.boostTimer = CONFIG.HERO_BOOST_DURATION;
       this.boostCooldown = CONFIG.HERO_BOOST_COOLDOWN;
       speed *= CONFIG.HERO_BOOST_MULT;

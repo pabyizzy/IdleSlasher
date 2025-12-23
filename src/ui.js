@@ -19,6 +19,13 @@
     this.hudFps = document.getElementById("hud-fps");
     this.hudHealth = document.getElementById("hud-health");
     this.hud = document.getElementById("hud");
+    this.hudLeft = document.querySelector(".hud-left");
+    this.hudRight = document.querySelector(".hud-right");
+    this.hudLeftToggle = document.getElementById("hud-left-toggle");
+    this.hudRightToggle = document.getElementById("hud-right-toggle");
+    this.hudLeftBody = document.getElementById("hud-left-body");
+    this.hudRightBody = document.getElementById("hud-right-body");
+    this.sprintButton = document.getElementById("btn-sprint");
     this.bossBar = document.getElementById("boss-bar");
     this.bossHealth = document.getElementById("boss-health");
 
@@ -28,6 +35,18 @@
     this.powerupChoices = Array.from(document.querySelectorAll(".powerup-choice"));
     this.weaponToast = document.getElementById("weapon-toast");
     this.weaponToastTimer = null;
+    this.isMobile = false;
+
+    if (this.hudLeftToggle) {
+      this.hudLeftToggle.addEventListener("click", () => {
+        this.toggleHudSection("left");
+      });
+    }
+    if (this.hudRightToggle) {
+      this.hudRightToggle.addEventListener("click", () => {
+        this.toggleHudSection("right");
+      });
+    }
   }
 
   hideAll() {
@@ -76,6 +95,52 @@
     this.weaponToastTimer = setTimeout(() => {
       this.weaponToast.classList.remove("visible");
     }, 1600);
+  }
+
+  setMobileMode(isMobile) {
+    if (this.isMobile === isMobile) return;
+    this.isMobile = isMobile;
+    document.body.classList.toggle("mobile", isMobile);
+    if (isMobile) {
+      this.setHudSectionCollapsed("right", true);
+      this.setHudSectionCollapsed("left", false);
+    } else {
+      this.setHudSectionCollapsed("right", false);
+      this.setHudSectionCollapsed("left", false);
+    }
+  }
+
+  bindSprintButton(input) {
+    if (!this.sprintButton || !input) return;
+    const start = (e) => {
+      input.setSprintActive(true);
+      e.preventDefault();
+    };
+    const end = (e) => {
+      input.setSprintActive(false);
+      e.preventDefault();
+    };
+    this.sprintButton.addEventListener("pointerdown", start);
+    this.sprintButton.addEventListener("pointerup", end);
+    this.sprintButton.addEventListener("pointercancel", end);
+    this.sprintButton.addEventListener("pointerleave", end);
+    this.sprintButton.addEventListener("contextmenu", (e) => e.preventDefault());
+  }
+
+  setHudSectionCollapsed(side, collapsed) {
+    const panel = side === "left" ? this.hudLeft : this.hudRight;
+    const body = side === "left" ? this.hudLeftBody : this.hudRightBody;
+    const toggle = side === "left" ? this.hudLeftToggle : this.hudRightToggle;
+    if (!panel || !body || !toggle) return;
+    panel.classList.toggle("collapsed", collapsed);
+    body.classList.toggle("collapsed", collapsed);
+    toggle.setAttribute("aria-expanded", String(!collapsed));
+  }
+
+  toggleHudSection(side) {
+    const panel = side === "left" ? this.hudLeft : this.hudRight;
+    if (!panel) return;
+    this.setHudSectionCollapsed(side, !panel.classList.contains("collapsed"));
   }
 
   showHud() {
