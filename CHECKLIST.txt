@@ -1,0 +1,5 @@
+- [x] Carry-over powerups persist cumulatively across runs (selection adds to persistent pool).
+- [x] Boss health bar no longer overlaps armor timer.
+- [x] Add bomb powerup that clears all enemies on screen.
+- [x] Fullscreen option in menu + toggle key during gameplay.
+- [x] Touch controls for mobile movement.

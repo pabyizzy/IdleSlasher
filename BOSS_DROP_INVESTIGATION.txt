@@ -1,0 +1,110 @@
+Boss drop + toast change review (lag after first boss)
+
+Summary
+- I reviewed the boss-drop proximity and drop-toast additions in game/UI code.
+- I do not see an obvious memory leak in those changes (drops are capped at 8 total powerups, and the toast timer is cleared before reuse).
+- Potential perf suspects are elsewhere (particle spam, frequent draw effects, or repeated logs), but those were not part of the boss-drop change.
+
+Changes added for boss drop proximity + toast
+1) spawnPowerUp now accepts explicit coordinates and returns the spawned PowerUp:
+--- src/game.js (new code)
+spawnPowerUp(xOverride, yOverride, typeOverride) {
+  const types = this.getPowerupTypes();
+  const type = typeOverride || types[Math.floor(Math.random() * types.length)];
+  const angle = Math.random() * Math.PI * 2;
+  const viewW = this.viewWidth || window.innerWidth;
+  const viewH = this.viewHeight || window.innerHeight;
+  const screenRadius = Math.hypot(viewW, viewH) / 2 - 80;
+  const x = typeof xOverride === "number" ? xOverride : this.hero.x + Math.cos(angle) * screenRadius;
+  const y = typeof yOverride === "number" ? yOverride : this.hero.y + Math.sin(angle) * screenRadius;
+  const powerUp = new PowerUp(x, y, type, CONFIG);
+  this.powerUps.push(powerUp);
+  if (this.powerUps.length > 8) {
+    this.powerUps.shift();
+  }
+  return powerUp;
+}
+
+2) onBossDefeated now spawns drops next to the boss and triggers a toast:
+--- src/game.js (new code)
+onBossDefeated(defeatedLevel, dropX, dropY) {
+  const bossIndex = Math.max(1, Math.ceil(defeatedLevel / CONFIG.BOSS_LEVEL_INTERVAL));
+  const dropCount = Math.min(3, bossIndex);
+  const dropCenterX = typeof dropX === "number" ? dropX : (this.bossActive ? this.bossActive.x : this.hero.x);
+  const dropCenterY = typeof dropY === "number" ? dropY : (this.bossActive ? this.bossActive.y : this.hero.y);
+  const droppedNames = [];
+  for (let i = 0; i < dropCount; i += 1) {
+    const angle = Math.random() * Math.PI * 2;
+    const radius = 18 + i * 10;
+    const x = dropCenterX + Math.cos(angle) * radius;
+    const y = dropCenterY + Math.sin(angle) * radius;
+    const powerUp = this.spawnPowerUp(x, y);
+    if (powerUp?.type?.name) {
+      droppedNames.push(powerUp.type.name);
+    }
+  }
+  this.bossActive = null;
+  ...
+  this.spawnFloatText("Boss Down");
+  this.triggerBomb();
+  if (droppedNames.length) {
+    this.ui.showDropToast(`Dropped: ${droppedNames.join(", ")}`);
+  }
+}
+
+3) Boss defeat now passes boss coordinates:
+--- src/game.js (new code)
+if (enemy.type.key === "BOSS") {
+  const defeatedLevel = this.bossActiveLevel ?? this.bossGateLevel;
+  this.onBossDefeated(defeatedLevel, enemy.x, enemy.y);
+}
+
+4) Drop toast UI plumbing:
+--- src/ui.js (new code)
+this.dropToast = document.getElementById("drop-toast");
+this.dropToastTimer = null;
+...
+showDropToast(text) {
+  if (!this.dropToast) return;
+  this.dropToast.textContent = text;
+  this.dropToast.classList.add("visible");
+  if (this.dropToastTimer) {
+    clearTimeout(this.dropToastTimer);
+  }
+  this.dropToastTimer = setTimeout(() => {
+    this.dropToast.classList.remove("visible");
+  }, 2200);
+}
+
+--- index.html (new code)
+<div id="drop-toast" aria-live="polite">Dropped:</div>
+
+--- styles.css (new code)
+#drop-toast {
+  position: absolute;
+  top: 28%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.96);
+  padding: 14px 28px;
+  border-radius: 14px;
+  background: rgba(10, 14, 20, 0.9);
+  color: #ffe7a3;
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  opacity: 0;
+  pointer-events: none;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+#drop-toast.visible {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+Notes on possible lag causes (not found in these changes)
+- Drops are capped to 8 total powerups, so they should not accumulate unbounded.
+- showDropToast clears the prior timeout before creating a new one.
+- No per-frame allocations were added in the drop-toast path.
+
+If you want, I can profile frame time around the boss appearance with a debug counter to pinpoint the spike.

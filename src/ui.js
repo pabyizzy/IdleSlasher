@@ -1,0 +1,96 @@
+﻿export class UIManager {
+  constructor() {
+    this.loading = document.getElementById("overlay-loading");
+    this.menu = document.getElementById("overlay-menu");
+    this.pause = document.getElementById("overlay-pause");
+    this.gameOver = document.getElementById("overlay-gameover");
+
+    this.btnStart = document.getElementById("btn-start");
+    this.btnRestart = document.getElementById("btn-restart");
+    this.settingDifficulty = document.getElementById("setting-difficulty");
+    this.settingSound = document.getElementById("setting-sound");
+    this.settingFps = document.getElementById("setting-fps");
+    this.settingFullscreen = document.getElementById("setting-fullscreen");
+
+    this.hudScore = document.getElementById("hud-score");
+    this.hudTime = document.getElementById("hud-time");
+    this.hudLevel = document.getElementById("hud-level");
+    this.hudWeapon = document.getElementById("hud-weapon");
+    this.hudFps = document.getElementById("hud-fps");
+    this.hudHealth = document.getElementById("hud-health");
+    this.bossBar = document.getElementById("boss-bar");
+    this.bossHealth = document.getElementById("boss-health");
+
+    this.finalScore = document.getElementById("final-score");
+    this.finalTime = document.getElementById("final-time");
+    this.finalLevel = document.getElementById("final-level");
+    this.powerupChoices = Array.from(document.querySelectorAll(".powerup-choice"));
+    this.weaponToast = document.getElementById("weapon-toast");
+    this.weaponToastTimer = null;
+  }
+
+  hideAll() {
+    this.loading.classList.remove("visible");
+    this.menu.classList.remove("visible");
+    this.pause.classList.remove("visible");
+    this.gameOver.classList.remove("visible");
+  }
+
+  showLoading() {
+    this.hideAll();
+    this.loading.classList.add("visible");
+  }
+
+  showMenu() {
+    this.hideAll();
+    this.menu.classList.add("visible");
+  }
+
+  showPause() {
+    this.pause.classList.add("visible");
+  }
+
+  hidePause() {
+    this.pause.classList.remove("visible");
+  }
+
+  showGameOver(score, time, level) {
+    this.hideAll();
+    this.gameOver.classList.add("visible");
+    this.finalScore.textContent = `Score: ${score}`;
+    this.finalTime.textContent = `Time: ${time.toFixed(1)}s`;
+    this.finalLevel.textContent = `Level: ${level}`;
+    this.powerupChoices.forEach((btn) => btn.classList.remove("active"));
+  }
+
+  showWeaponUpgrade() {
+    if (!this.weaponToast) return;
+    this.weaponToast.classList.add("visible");
+    if (this.weaponToastTimer) {
+      clearTimeout(this.weaponToastTimer);
+    }
+    this.weaponToastTimer = setTimeout(() => {
+      this.weaponToast.classList.remove("visible");
+    }, 1600);
+  }
+
+
+  updateHud(score, time, level, health, maxHealth, showFps, fps, boss, weaponDamage) {
+    this.hudScore.textContent = score;
+    this.hudTime.textContent = time.toFixed(1);
+    this.hudLevel.textContent = level;
+    if (this.hudWeapon) {
+      this.hudWeapon.textContent = Math.round(weaponDamage * 10);
+    }
+    const pct = Math.max(0, Math.min(1, health / maxHealth));
+    this.hudHealth.style.width = `${pct * 100}%`;
+    this.hudFps.textContent = showFps ? Math.round(fps).toString() : "--";
+    if (boss && boss.max > 0) {
+      const bossPct = Math.max(0, Math.min(1, boss.current / boss.max));
+      this.bossHealth.style.width = `${bossPct * 100}%`;
+      this.bossBar.classList.remove("hidden");
+    } else {
+      this.bossBar.classList.add("hidden");
+    }
+  }
+}
