@@ -245,6 +245,24 @@ button:hover {
   font-size: 0.85rem;
 }
 
+.hud-actions {
+  display: grid;
+  gap: 8px;
+}
+
+.hud-action {
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(12, 16, 24, 0.85);
+  color: var(--text);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  pointer-events: auto;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
 .controls-mobile {
   display: none;
 }
@@ -353,34 +371,12 @@ button:hover {
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.28);
 }
 
-.pause-button {
-  position: fixed;
-  right: 18px;
-  bottom: 88px;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 16px;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(12, 16, 24, 0.85);
-  color: var(--text);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  pointer-events: auto;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
-}
 
 body.mobile .hud-toggle {
   display: inline-flex;
 }
 
 body.mobile .sprint-button {
-  display: inline-flex;
-}
-
-body.mobile .pause-button {
   display: inline-flex;
 }
 

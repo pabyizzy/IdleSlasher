@@ -29,6 +29,7 @@
     this.hudRightBody = document.getElementById("hud-right-body");
     this.sprintButton = document.getElementById("btn-sprint");
     this.pauseButton = document.getElementById("btn-pause");
+    this.exitFullscreenButton = document.getElementById("btn-exit-fullscreen");
     this.bossBar = document.getElementById("boss-bar");
     this.bossHealth = document.getElementById("boss-health");
 

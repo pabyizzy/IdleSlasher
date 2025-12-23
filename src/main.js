@@ -12,6 +12,13 @@ if (pauseButton) {
     game.pauseToggle();
   });
 }
+const exitFullscreenButton = document.getElementById("btn-exit-fullscreen");
+if (exitFullscreenButton) {
+  exitFullscreenButton.addEventListener("click", () => {
+    game.setFullscreenEnabled(false);
+    ui.settingFullscreen.checked = false;
+  });
+}
 
 function applySettings() {
   const difficulty = ui.settingDifficulty.value;
