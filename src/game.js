@@ -467,12 +467,31 @@ export class Game {
       enemy.update(dt, this.hero);
 
       const heroHit = circleCollision(enemy.x, enemy.y, enemy.radius, this.hero.x, this.hero.y, this.hero.radius);
+      if (heroHit && enemy.type.key === "BOSS") {
+        this.applyBossCollision(enemy);
+        if (this.hero.health <= 0) {
+          this.hero.health = 0;
+          this.gameOver();
+          break;
+        }
+      }
+      if (heroHit && enemy.type.key !== "BOSS") {
+        if (this.armorTimer <= 0) {
+          this.sound.playSfx("DAMAGE", 0.7);
+          this.hero.health -= CONFIG.DAMAGE_PER_HIT;
+        }
+        this.enemies[i] = this.enemies[this.enemies.length - 1];
+        this.enemies.pop();
+        if (this.hero.health <= 0) {
+          this.hero.health = 0;
+          this.gameOver();
+          break;
+        }
+        continue;
+      }
 
       if (this.checkWeaponCollision(enemy)) {
         if (enemy.hitCooldown > 0) {
-          if (enemy.type.key === "BOSS" && heroHit) {
-            this.applyBossCollision(enemy);
-          }
           continue;
         }
         enemy.hitCooldown = enemy.hitCooldownDuration;
@@ -490,25 +509,6 @@ export class Game {
           }
           this.enemies[i] = this.enemies[this.enemies.length - 1];
           this.enemies.pop();
-          continue;
-        }
-      }
-
-      if (heroHit) {
-        if (enemy.type.key === "BOSS") {
-          this.applyBossCollision(enemy);
-        } else {
-          if (this.armorTimer <= 0) {
-            this.sound.playSfx("DAMAGE", 0.7);
-            this.hero.health -= CONFIG.DAMAGE_PER_HIT;
-          }
-          this.enemies[i] = this.enemies[this.enemies.length - 1];
-          this.enemies.pop();
-        }
-        if (this.hero.health <= 0) {
-          this.hero.health = 0;
-          this.gameOver();
-          break;
         }
         continue;
       }
