@@ -18,6 +18,7 @@ export const CONFIG = {
   WEAPON_ORBIT_RADIUS: 60,
   WEAPON_ANGULAR_SPEED: 4.4,
   WEAPON_RADIUS: 20,
+  WEAPON_COLLISION_ANGLE_STEP: 0.12,
 
   ENEMY_RADIUS: 16,
   ENEMY_SPEED_BASE: 90,
@@ -146,6 +147,7 @@ export class Game {
     this.state = "loading";
     this.hero = new Hero(0, 0, CONFIG);
     this.weapon = new Weapon(this.hero, CONFIG);
+    this.weaponPrevAngle = this.weapon.angle;
     this.characterRenderer = new CharacterRenderer(this.assets, "assassin");
     this.characterRenderer.setScale(CONFIG.HERO_SPRITE_SCALE);
     this.enemies = [];
@@ -310,6 +312,7 @@ export class Game {
   reset() {
     this.hero.reset(0, 0);
     this.weapon = new Weapon(this.hero, CONFIG);
+    this.weaponPrevAngle = this.weapon.angle;
     this.enemies.length = 0;
     this.particles.length = 0;
     this.powerUps.length = 0;
@@ -612,12 +615,17 @@ export class Game {
   }
 
   updateWeapon(dt) {
+    if (this.weaponPrevAngle === undefined || Number.isNaN(this.weaponPrevAngle)) {
+      this.weaponPrevAngle = this.weapon.angle;
+    }
+    const prevAngle = this.weapon.angle;
     const originalSpeed = this.weapon.angularSpeed;
     if (this.swingBoostLevel > 0) {
       this.weapon.angularSpeed = originalSpeed * (1 + this.swingBoostLevel * 0.3);
     }
     this.weapon.update(dt);
     this.weapon.angularSpeed = originalSpeed;
+    this.weaponPrevAngle = prevAngle;
   }
 
   spawnEnemy() {
@@ -803,7 +811,7 @@ export class Game {
 
   updatePowerupTimers(_) {}
 
-  getWeaponPositions() {
+  getWeaponPositions(angleOverride = this.weapon.angle) {
     const positions = [];
     const total = 1 + this.extraWeaponLevel;
     const innerMax = 5;
@@ -815,7 +823,7 @@ export class Game {
 
     for (let i = 0; i < innerCount; i += 1) {
       const offset = (Math.PI * 2 * i) / innerCount;
-      const angle = this.weapon.angle + offset;
+      const angle = angleOverride + offset;
       const x = this.hero.x + Math.cos(angle) * innerRadius;
       const y = this.hero.y + Math.sin(angle) * innerRadius;
       positions.push({ x, y, angle });
@@ -824,7 +832,7 @@ export class Game {
     if (outerCount > 0) {
       for (let i = 0; i < outerCount; i += 1) {
         const offset = (Math.PI * 2 * i) / outerCount;
-        const angle = this.weapon.angle * 1.5 + offset + Math.PI / outerCount;
+        const angle = angleOverride * 1.5 + offset + Math.PI / outerCount;
         const x = this.hero.x + Math.cos(angle) * outerRadius;
         const y = this.hero.y + Math.sin(angle) * outerRadius;
         positions.push({ x, y, angle });
@@ -834,20 +842,25 @@ export class Game {
   }
 
   checkWeaponCollision(enemy) {
-    const positions = this.getWeaponPositions();
-    for (const pos of positions) {
-      if (circleCollision(enemy.x, enemy.y, enemy.radius, pos.x, pos.y, this.weapon.radius)) {
-        return true;
-      }
-    }
-    return false;
+    return this.checkWeaponCollisionAt(enemy.x, enemy.y, enemy.radius);
   }
 
   checkPowerupWeaponCollision(powerUp) {
-    const positions = this.getWeaponPositions();
-    for (const pos of positions) {
-      if (circleCollision(powerUp.x, powerUp.y, powerUp.radius, pos.x, pos.y, this.weapon.radius)) {
-        return true;
+    return this.checkWeaponCollisionAt(powerUp.x, powerUp.y, powerUp.radius);
+  }
+
+  checkWeaponCollisionAt(targetX, targetY, targetRadius) {
+    const delta = this.weapon.angle - this.weaponPrevAngle;
+    const step = CONFIG.WEAPON_COLLISION_ANGLE_STEP;
+    const steps = Math.max(1, Math.ceil(Math.abs(delta) / step));
+    for (let i = 0; i <= steps; i += 1) {
+      const t = steps === 0 ? 1 : i / steps;
+      const angle = this.weaponPrevAngle + delta * t;
+      const positions = this.getWeaponPositions(angle);
+      for (const pos of positions) {
+        if (circleCollision(targetX, targetY, targetRadius, pos.x, pos.y, this.weapon.radius)) {
+          return true;
+        }
       }
     }
     return false;
