@@ -466,8 +466,13 @@ export class Game {
       }
       enemy.update(dt, this.hero);
 
+      const heroHit = circleCollision(enemy.x, enemy.y, enemy.radius, this.hero.x, this.hero.y, this.hero.radius);
+
       if (this.checkWeaponCollision(enemy)) {
         if (enemy.hitCooldown > 0) {
+          if (enemy.type.key === "BOSS" && heroHit) {
+            this.applyBossCollision(enemy);
+          }
           continue;
         }
         enemy.hitCooldown = enemy.hitCooldownDuration;
@@ -485,11 +490,11 @@ export class Game {
           }
           this.enemies[i] = this.enemies[this.enemies.length - 1];
           this.enemies.pop();
+          continue;
         }
-        continue;
       }
 
-      if (circleCollision(enemy.x, enemy.y, enemy.radius, this.hero.x, this.hero.y, this.hero.radius)) {
+      if (heroHit) {
         if (enemy.type.key === "BOSS") {
           this.applyBossCollision(enemy);
         } else {
