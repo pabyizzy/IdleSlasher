@@ -6,6 +6,12 @@ const ui = new UIManager();
 const game = new Game(canvas, ui);
 game.input.attachTouch(canvas);
 ui.bindSprintButton(game.input);
+const pauseButton = document.getElementById("btn-pause");
+if (pauseButton) {
+  pauseButton.addEventListener("click", () => {
+    game.pauseToggle();
+  });
+}
 
 function applySettings() {
   const difficulty = ui.settingDifficulty.value;

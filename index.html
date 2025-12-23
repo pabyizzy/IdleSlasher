@@ -78,6 +78,13 @@
       </div>
     </section>
 
+    <section id="overlay-rotate" class="rotate-overlay" aria-live="polite">
+      <div class="panel">
+        <h1>Rotate Device</h1>
+        <p>Landscape required</p>
+      </div>
+    </section>
+
     <section id="hud" class="hidden">
       <div class="hud-left hud-panel">
         <div class="hud-header">
@@ -125,13 +132,14 @@
             <strong>Controls</strong>
             <div>Move: Drag</div>
             <div>Boost: Hold Sprint</div>
-            <div>Pause: Menu</div>
+            <div>Pause: Tap Pause</div>
             <div>Start: Tap Start</div>
             <div>Sound: Menu Toggle</div>
           </div>
         </div>
       </div>
 
+      <button id="btn-pause" class="pause-button" type="button" aria-label="Pause or resume">Pause</button>
       <button id="btn-sprint" class="sprint-button" type="button" aria-label="Hold to sprint">Sprint</button>
     </section>
 
