@@ -11,6 +11,7 @@
     this.settingSound = document.getElementById("setting-sound");
     this.settingFps = document.getElementById("setting-fps");
     this.settingFullscreen = document.getElementById("setting-fullscreen");
+    this.menuHint = document.getElementById("menu-hint");
 
     this.hudScore = document.getElementById("hud-score");
     this.hudTime = document.getElementById("hud-time");
@@ -101,6 +102,9 @@
     if (this.isMobile === isMobile) return;
     this.isMobile = isMobile;
     document.body.classList.toggle("mobile", isMobile);
+    if (this.menuHint) {
+      this.menuHint.textContent = isMobile ? "Tap Start to play" : "Press Space to start";
+    }
     if (isMobile) {
       this.setHudSectionCollapsed("right", true);
       this.setHudSectionCollapsed("left", false);
@@ -108,6 +112,10 @@
       this.setHudSectionCollapsed("right", false);
       this.setHudSectionCollapsed("left", false);
     }
+  }
+
+  setPortraitMode(isPortrait) {
+    document.body.classList.toggle("portrait", isPortrait);
   }
 
   bindSprintButton(input) {

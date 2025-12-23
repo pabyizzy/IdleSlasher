@@ -129,6 +129,7 @@ button:hover {
   right: 16px;
   display: flex;
   justify-content: space-between;
+  align-items: flex-start;
   gap: 8px;
   pointer-events: none;
   font-size: 0.95rem;
@@ -142,6 +143,7 @@ button:hover {
   display: grid;
   gap: 6px;
   pointer-events: auto;
+  align-self: flex-start;
 }
 
 .hud-center {
@@ -229,6 +231,10 @@ button:hover {
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   font-size: 0.85rem;
+}
+
+.controls-mobile {
+  display: none;
 }
 
 .controls strong {
@@ -341,6 +347,21 @@ body.mobile .hud-toggle {
 
 body.mobile .sprint-button {
   display: inline-flex;
+}
+
+body.mobile .controls-desktop {
+  display: none;
+}
+
+body.mobile .controls-mobile {
+  display: block;
+}
+
+body.mobile.portrait #app {
+  width: 100vh;
+  height: 100vw;
+  transform: rotate(90deg) translateY(-100%);
+  transform-origin: top left;
 }
 
 

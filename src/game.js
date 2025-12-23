@@ -59,7 +59,7 @@ export const CONFIG = {
   WEAPON_DAMAGE_BONUS: 0.2,
   BOSS_KNOCKBACK: 520,
   KNOCKBACK_DECAY: 7,
-  MOBILE_ZOOM: 0.85,
+  MOBILE_ZOOM: 0.55,
   MOBILE_MAX_WIDTH: 900,
 
   COLORS: {
@@ -245,11 +245,18 @@ export class Game {
     const dpr = window.devicePixelRatio || 1;
     const isMobile = window.matchMedia("(pointer: coarse)").matches
       || window.innerWidth <= CONFIG.MOBILE_MAX_WIDTH;
+    const isPortrait = window.innerHeight > window.innerWidth;
     if (this.isMobile !== isMobile) {
       this.isMobile = isMobile;
       if (this.ui?.setMobileMode) {
         this.ui.setMobileMode(isMobile);
       }
+    }
+    if (this.ui?.setPortraitMode) {
+      this.ui.setPortraitMode(isMobile && isPortrait);
+    }
+    if (isMobile) {
+      this.lockOrientation();
     }
     const scale = isMobile ? CONFIG.MOBILE_ZOOM : 1;
     this.canvas.width = Math.floor(window.innerWidth * dpr);
