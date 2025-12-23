@@ -12,6 +12,7 @@
     this.settingFps = document.getElementById("setting-fps");
     this.settingFullscreen = document.getElementById("setting-fullscreen");
     this.menuHint = document.getElementById("menu-hint");
+    this.defaultMenuHint = this.menuHint?.textContent ?? "";
 
     this.hudScore = document.getElementById("hud-score");
     this.hudTime = document.getElementById("hud-time");
@@ -116,6 +117,16 @@
 
   setPortraitMode(isPortrait) {
     document.body.classList.toggle("portrait", isPortrait);
+    if (!this.menuHint) return;
+    if (this.isMobile && isPortrait) {
+      this.menuHint.textContent = "Rotate device for landscape";
+      return;
+    }
+    if (this.isMobile) {
+      this.menuHint.textContent = "Tap Start to play";
+      return;
+    }
+    this.menuHint.textContent = this.defaultMenuHint || "Press Space to start";
   }
 
   bindSprintButton(input) {

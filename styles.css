@@ -357,12 +357,6 @@ body.mobile .controls-mobile {
   display: block;
 }
 
-body.mobile.portrait #app {
-  width: 100vh;
-  height: 100vw;
-  transform: rotate(90deg) translateY(-100%);
-  transform-origin: top left;
-}
 
 
 @media (max-width: 720px) {
