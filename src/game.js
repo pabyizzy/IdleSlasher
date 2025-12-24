@@ -514,7 +514,7 @@ export class Game {
       }
 
       const dist = Math.hypot(enemy.x - this.hero.x, enemy.y - this.hero.y);
-      if (dist > CONFIG.CLEANUP_DISTANCE && enemy.type.key !== "BOSS") {
+      if (dist > this.getCleanupDistance() && enemy.type.key !== "BOSS") {
         this.enemies[i] = this.enemies[this.enemies.length - 1];
         this.enemies.pop();
       }
@@ -649,11 +649,23 @@ export class Game {
     this.weaponPrevAngle = prevAngle;
   }
 
-  spawnEnemy() {
-    const angle = Math.random() * Math.PI * 2;
+  getCleanupDistance() {
     const viewW = this.viewWidth || window.innerWidth;
     const viewH = this.viewHeight || window.innerHeight;
-    const screenRadius = Math.hypot(viewW, viewH) / 2 + 120;
+    const base = Math.hypot(viewW, viewH) / 2 + 360;
+    return Math.max(CONFIG.CLEANUP_DISTANCE, base);
+  }
+
+  getSpawnRadius(margin) {
+    const viewW = this.viewWidth || window.innerWidth;
+    const viewH = this.viewHeight || window.innerHeight;
+    const base = Math.hypot(viewW, viewH) / 2 + margin;
+    return Math.min(base, this.getCleanupDistance() - 80);
+  }
+
+  spawnEnemy() {
+    const angle = Math.random() * Math.PI * 2;
+    const screenRadius = this.getSpawnRadius(120);
     const spawnX = this.hero.x + Math.cos(angle) * screenRadius;
     const spawnY = this.hero.y + Math.sin(angle) * screenRadius;
     const speedScale = 1 + (this.level - 1) * CONFIG.LEVEL_SPEED_SCALE;
@@ -686,9 +698,7 @@ export class Game {
   spawnBoss() {
     if (this.bossActive) return;
     const angle = Math.random() * Math.PI * 2;
-    const viewW = this.viewWidth || window.innerWidth;
-    const viewH = this.viewHeight || window.innerHeight;
-    const screenRadius = Math.hypot(viewW, viewH) / 2 + 220;
+    const screenRadius = this.getSpawnRadius(220);
     const spawnX = this.hero.x + Math.cos(angle) * screenRadius;
     const spawnY = this.hero.y + Math.sin(angle) * screenRadius;
     const speed = CONFIG.ENEMY_SPEED_BASE * CONFIG.BOSS_SPEED_MULT;
